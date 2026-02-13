@@ -1,0 +1,1180 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+    <title>Valentine's Landing Page</title>
+    <style>
+      :root {
+        --pink-bg: #ffb6d9;
+        --heart-one: #fff0f7;
+        --heart-two: #ffdced;
+        --text-color: #6e255a;
+        --header-color: #7a2762;
+        --cta-heart: #c7a0ff;
+        --cta-heart-hover: #ba90ff;
+        --cta-text: #512c79;
+        --flash-red: #ff2b42;
+        --flash-green: #3bcf74;
+      }
+
+      * {
+        box-sizing: border-box;
+      }
+
+      html,
+      body {
+        margin: 0;
+        width: 100%;
+        height: 100%;
+        overflow: hidden;
+        overscroll-behavior: none;
+      }
+
+      body {
+        position: fixed;
+        inset: 0;
+        min-height: 100vh;
+        min-height: 100dvh;
+        background: var(--pink-bg);
+        font-family: 'Marker Felt', 'Chalkboard SE', 'Comic Sans MS', 'Trebuchet MS', sans-serif;
+      }
+
+      .scene {
+        position: fixed;
+        inset: 0;
+        width: 100%;
+        height: 100vh;
+        height: 100dvh;
+        overflow: hidden;
+        will-change: transform;
+      }
+
+      .hearts {
+        position: absolute;
+        inset: 0;
+        width: 100%;
+        height: 100%;
+        overflow: hidden;
+        pointer-events: none;
+      }
+
+      .view {
+        position: absolute;
+        inset: 0;
+        z-index: 2;
+      }
+
+      .view[hidden] {
+        display: none;
+      }
+
+      .heart {
+        position: absolute;
+        width: 18px;
+        height: 18px;
+        transform: rotate(-45deg);
+        animation: floatHeart 2.6s ease-in-out infinite alternate;
+        opacity: 0.78;
+        will-change: transform, opacity;
+      }
+
+      .heart::before,
+      .heart::after {
+        content: '';
+        position: absolute;
+        width: 18px;
+        height: 18px;
+        border-radius: 50%;
+        background: inherit;
+      }
+
+      .heart::before {
+        top: -9px;
+        left: 0;
+      }
+
+      .heart::after {
+        top: 0;
+        left: 9px;
+      }
+
+      .heart--one {
+        background: var(--heart-one);
+      }
+
+      .heart--two {
+        background: var(--heart-two);
+      }
+
+      .delay-0 { animation-delay: -0.15s; }
+      .delay-1 { animation-delay: -0.45s; }
+      .delay-2 { animation-delay: -0.75s; }
+      .delay-3 { animation-delay: -1.05s; }
+      .delay-4 { animation-delay: -1.35s; }
+      .delay-5 { animation-delay: -1.65s; }
+
+      .headline,
+      .subtext {
+        position: absolute;
+        left: 50%;
+        width: min(90vw, 700px);
+        text-align: center;
+        z-index: 2;
+        text-shadow: 0 2px 12px rgba(255, 255, 255, 0.45);
+        padding: 0 10px;
+        font-weight: 800;
+        letter-spacing: 0.01em;
+      }
+
+      .subtext {
+        top: 50%;
+        transform: translate(-50%, -50%);
+        color: var(--text-color);
+        margin: 0;
+        font-size: clamp(1.22rem, 4.1vw, 1.95rem);
+        line-height: 1.35;
+      }
+
+      .headline {
+        top: calc(50% - 84px);
+        transform: translate(-50%, -50%);
+        color: var(--header-color);
+        margin: 0;
+        font-size: clamp(2.15rem, 6.8vw, 3.65rem);
+        line-height: 1.1;
+      }
+
+      .cta-wrap {
+        position: absolute;
+        left: 50%;
+        bottom: max(8.5dvh, 52px);
+        transform: translateX(-50%);
+        z-index: 3;
+      }
+
+      .heart-cta {
+        position: relative;
+        width: 196px;
+        height: 176px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        text-decoration: none;
+        cursor: pointer;
+      }
+
+      .heart-cta .heart-icon {
+        position: absolute;
+        width: 98px;
+        height: 98px;
+        transform: rotate(-45deg);
+        background: var(--cta-heart);
+        border-radius: 16px;
+        transition: background-color 180ms ease, transform 180ms ease;
+      }
+
+      .heart-cta .heart-icon::before,
+      .heart-cta .heart-icon::after {
+        content: '';
+        position: absolute;
+        width: 98px;
+        height: 98px;
+        border-radius: 50%;
+        background: inherit;
+      }
+
+      .heart-cta .heart-icon::before {
+        top: -49px;
+        left: 0;
+      }
+
+      .heart-cta .heart-icon::after {
+        top: 0;
+        left: 49px;
+      }
+
+      .heart-cta .heart-label {
+        position: relative;
+        z-index: 2;
+        margin-top: 6px;
+        font-size: 1.06rem;
+        font-weight: 800;
+        color: var(--cta-text);
+      }
+
+      .heart-cta:hover .heart-icon,
+      .heart-cta:focus-visible .heart-icon {
+        background: var(--cta-heart-hover);
+        transform: rotate(-45deg) scale(1.04);
+      }
+
+      .heart-cta:focus-visible {
+        outline: 3px solid #fff6ff;
+        outline-offset: 8px;
+        border-radius: 16px;
+      }
+
+      .flash-overlay {
+        position: fixed;
+        inset: 0;
+        opacity: 0;
+        pointer-events: none;
+        z-index: 8;
+      }
+
+      .flash-overlay.flash-red {
+        animation: redFlash 0.9s ease;
+      }
+
+      .flash-overlay.flash-green {
+        animation: greenFlash 0.9s ease;
+      }
+
+      .scene.shake {
+        animation: screenShake 0.45s ease;
+      }
+
+      .popup {
+        position: fixed;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        width: min(86vw, 420px);
+        min-height: 320px;
+        background: #33353b;
+        border: 2px solid #a7a7b2;
+        border-radius: 20px;
+        padding: 1.45rem 1.2rem 1.2rem;
+        color: #f5f5f8;
+        text-align: center;
+        z-index: 9;
+        box-shadow: 0 14px 30px rgba(0, 0, 0, 0.28);
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+      }
+
+      .popup[hidden] {
+        display: none;
+      }
+
+      .popup h2 {
+        margin: 0;
+        font-size: clamp(1.5rem, 5vw, 2rem);
+      }
+
+      .password-form {
+        margin-top: 1.2rem;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        gap: 1rem;
+      }
+
+      .password-input {
+        width: min(80vw, 280px);
+        text-align: center;
+        font-size: 1.75rem;
+        font-weight: 800;
+        letter-spacing: 0.42em;
+        padding: 0.45rem 0.5rem 0.6rem;
+        color: #ffffff;
+        background: transparent;
+        border: 0;
+        border-bottom: 3px solid #d8d8e2;
+        outline: none;
+      }
+
+      .password-input::placeholder {
+        color: #b7b7c4;
+      }
+
+      .password-indicator {
+        width: min(80vw, 280px);
+        display: grid;
+        grid-template-columns: repeat(6, 1fr);
+        gap: 0.45rem;
+      }
+
+      .password-indicator span {
+        height: 4px;
+        border-radius: 8px;
+        background: #7f8191;
+      }
+
+      .password-indicator span.filled {
+        background: #ececf6;
+      }
+
+      .submit-btn {
+        margin-top: 0.35rem;
+        border: 0;
+        border-radius: 999px;
+        padding: 0.55rem 1.35rem;
+        font: 800 1rem/1 'Marker Felt', 'Chalkboard SE', 'Comic Sans MS', 'Trebuchet MS', sans-serif;
+        color: #ffffff;
+        background: #8b6ad8;
+        cursor: pointer;
+      }
+
+
+      .next-stage {
+        padding: max(18px, env(safe-area-inset-top)) max(14px, env(safe-area-inset-right))
+          max(18px, env(safe-area-inset-bottom)) max(14px, env(safe-area-inset-left));
+      }
+
+      .next-stage-grid {
+        height: 100%;
+        display: grid;
+        grid-template-rows: 1fr 1fr 1fr;
+        align-items: center;
+        justify-items: center;
+      }
+
+      .stage-card {
+        position: relative;
+        width: min(88vw, 520px);
+        min-height: clamp(100px, 17vh, 150px);
+        border-radius: 22px;
+        border: 2px solid #9e77b8;
+        background: #ddb4e8;
+        color: #4f2a67;
+        box-shadow: 0 12px 24px rgba(98, 52, 128, 0.23);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        text-align: center;
+        font-size: clamp(1.15rem, 3.7vw, 1.55rem);
+        font-weight: 800;
+        letter-spacing: 0.01em;
+        padding: 1rem;
+      }
+
+      .stage-card--middle {
+        background: #d4a4e1;
+      }
+
+      .stage-card {
+        cursor: pointer;
+        transition: transform 380ms ease, width 380ms ease, min-height 380ms ease, opacity 260ms ease,
+          box-shadow 280ms ease, background-color 280ms ease;
+      }
+
+      .stage-card:hover {
+        transform: translateY(-2px);
+      }
+
+      .stage-card-title {
+        margin: 0;
+      }
+
+      .stage-card-close,
+      .stage-card-content {
+        display: none;
+      }
+
+      .next-stage.has-expanded .stage-card:not(.is-expanded) {
+        opacity: 0;
+        transform: scale(0.92);
+        pointer-events: none;
+      }
+
+      .stage-card.is-expanded {
+        position: fixed;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        width: min(92vw, 820px);
+        height: min(84dvh, 760px);
+        z-index: 15;
+        background: #e4bee9;
+        box-shadow: 0 18px 36px rgba(79, 42, 103, 0.33);
+        cursor: default;
+        align-items: flex-start;
+        justify-content: flex-start;
+        text-align: left;
+        overflow: hidden;
+      }
+
+      .stage-card.is-expanded .stage-card-title {
+        font-size: clamp(1.3rem, 4.5vw, 2rem);
+        padding-right: 2.2rem;
+      }
+
+      .stage-card.is-expanded .stage-card-inner {
+        width: 100%;
+        height: 100%;
+        display: flex;
+        flex-direction: column;
+        padding-top: 0.25rem;
+      }
+
+      .stage-card.is-expanded .stage-card-close {
+        display: inline-flex;
+        position: absolute;
+        top: 0.9rem;
+        right: 0.9rem;
+        z-index: 2;
+        border: 0;
+        border-radius: 10px;
+        width: 36px;
+        height: 36px;
+        background: #b982cc;
+        color: #fff;
+        font-size: 1.2rem;
+        font-weight: 800;
+        align-items: center;
+        justify-content: center;
+        cursor: pointer;
+      }
+
+      .stage-card.is-expanded .stage-card-content {
+        display: block;
+        margin-top: 1rem;
+        color: #5f397a;
+        font-size: clamp(1rem, 3.6vw, 1.25rem);
+        line-height: 1.5;
+      }
+
+
+      .stage-card-content--timeline {
+        text-align: center;
+      }
+
+      .stage-card-content--timeline .timeline-list {
+        display: flex;
+        flex-direction: column;
+        gap: 1.45rem;
+        padding-bottom: 0.65rem;
+      }
+
+      .timeline-item {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+      }
+
+      .timeline-item-title {
+        margin: 0 0 0.55rem;
+        font-size: clamp(1.12rem, 3.9vw, 1.65rem);
+        color: #4f2a67;
+      }
+
+      .timeline-item-text {
+        margin: 0;
+        max-width: 95%;
+      }
+
+
+      .stage-card--top.is-expanded .stage-card-content--timeline {
+        margin-top: 0.65rem;
+        padding-right: 0.4rem;
+        overflow-y: auto;
+        -webkit-overflow-scrolling: touch;
+        flex: 1;
+      }
+
+      .stage-card-content--love {
+        text-align: left;
+        padding-left: 0.35rem;
+      }
+
+      .love-list {
+        margin: 0;
+        padding-left: 1.2rem;
+        display: flex;
+        flex-direction: column;
+        gap: 0.5rem;
+      }
+
+      .love-list li {
+        line-height: 1.45;
+      }
+
+
+      .stage-card--bottom.is-expanded .stage-card-content--letter {
+        margin-top: 0.65rem;
+        padding-right: 0.4rem;
+        overflow-y: auto;
+        -webkit-overflow-scrolling: touch;
+        flex: 1;
+      }
+
+      .stage-card-content--letter {
+        text-align: left;
+        white-space: pre-line;
+      }
+
+      .letter-body {
+        margin: 0;
+        line-height: 1.55;
+      }
+
+
+      .all-done-btn {
+        border: 2px solid #9e77b8;
+        background: #dcb2e6;
+        color: #4f2a67;
+        border-radius: 16px;
+        padding: 0.5rem 1rem;
+        font: 800 0.95rem/1 'Marker Felt', 'Chalkboard SE', 'Comic Sans MS', 'Trebuchet MS', sans-serif;
+        cursor: pointer;
+        opacity: 0;
+        transform: translateY(10px);
+        pointer-events: none;
+        transition: opacity 240ms ease, transform 240ms ease;
+      }
+
+      .all-done-btn.visible {
+        opacity: 1;
+        transform: translateY(0);
+        pointer-events: auto;
+      }
+
+      .next-stage-actions {
+        display: flex;
+        justify-content: center;
+        margin-top: 0.55rem;
+      }
+
+      .valentine-view {
+        padding: max(20px, env(safe-area-inset-top)) max(16px, env(safe-area-inset-right))
+          max(20px, env(safe-area-inset-bottom)) max(16px, env(safe-area-inset-left));
+      }
+
+      .valentine-prompt,
+      .valentine-result {
+        position: relative;
+        width: 100%;
+        height: 100%;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+      }
+
+      .valentine-prompt.fading {
+        animation: dissolveOut 420ms ease forwards;
+      }
+
+      .valentine-header {
+        margin: 0;
+        margin-top: 10dvh;
+        text-align: center;
+        color: #6a2f82;
+        font-size: clamp(2rem, 8vw, 3.4rem);
+        line-height: 1.1;
+        text-shadow: 0 3px 10px rgba(255, 241, 250, 0.65);
+      }
+
+      .valentine-actions {
+        position: relative;
+        width: min(88vw, 520px);
+        height: 42dvh;
+        margin-top: auto;
+        margin-bottom: 8dvh;
+      }
+
+      .valentine-btn {
+        border: 2px solid #9e77b8;
+        border-radius: 22px;
+        background: #ddb4e8;
+        color: #4f2a67;
+        font-weight: 800;
+        cursor: pointer;
+        transition: transform 220ms ease;
+      }
+
+      .valentine-btn:hover {
+        transform: translateY(-2px);
+      }
+
+      .valentine-yes {
+        position: absolute;
+        left: 50%;
+        top: 28%;
+        transform: translateX(-50%);
+        width: min(78vw, 350px);
+        min-height: 86px;
+        font-size: clamp(1.5rem, 6vw, 2rem);
+      }
+
+      .valentine-no {
+        position: absolute;
+        left: 50%;
+        top: 58%;
+        transform: translate(calc(-50% + var(--no-offset-x, 0px)), var(--no-offset-y, 0px));
+        width: min(48vw, 190px);
+        min-height: 58px;
+        font-size: clamp(1rem, 4.2vw, 1.2rem);
+        transition: transform 280ms ease, left 280ms ease, top 280ms ease;
+      }
+
+      .valentine-result {
+        justify-content: center;
+        text-align: center;
+        animation: popIn 340ms ease;
+      }
+
+      .valentine-result h2 {
+        margin: 0;
+        color: #6a2f82;
+        font-size: clamp(2.1rem, 9vw, 3.6rem);
+      }
+
+      .valentine-result p {
+        margin-top: 0.9rem;
+        max-width: min(88vw, 650px);
+        color: #5a2f71;
+        font-size: clamp(1.05rem, 4.4vw, 1.35rem);
+        line-height: 1.5;
+      }
+
+      @keyframes dissolveOut {
+        to {
+          opacity: 0;
+          transform: scale(0.98);
+        }
+      }
+
+      @keyframes popIn {
+        from {
+          opacity: 0;
+          transform: translateY(8px);
+        }
+        to {
+          opacity: 1;
+          transform: translateY(0);
+        }
+      }
+
+      @media (max-width: 430px) {
+        .stage-card-content--timeline .timeline-list {
+          gap: 1.1rem;
+        }
+
+        .timeline-item-title {
+          margin-bottom: 0.45rem;
+        }
+      }
+
+      @keyframes floatHeart {
+        0% {
+          transform: rotate(-45deg) scale(1);
+          opacity: 0.72;
+        }
+
+        100% {
+          transform: translateY(-4px) rotate(-45deg) scale(1.08);
+          opacity: 0.95;
+        }
+      }
+
+      @keyframes redFlash {
+        0% {
+          opacity: 0;
+          background: var(--flash-red);
+        }
+        16% {
+          opacity: 0.58;
+          background: var(--flash-red);
+        }
+        100% {
+          opacity: 0;
+          background: var(--flash-red);
+        }
+      }
+
+      @keyframes greenFlash {
+        0% {
+          opacity: 0;
+          background: var(--flash-green);
+        }
+        16% {
+          opacity: 0.52;
+          background: var(--flash-green);
+        }
+        100% {
+          opacity: 0;
+          background: var(--flash-green);
+        }
+      }
+
+      @keyframes screenShake {
+        0%,
+        100% {
+          transform: translate3d(0, 0, 0);
+        }
+        20% {
+          transform: translate3d(-7px, 0, 0);
+        }
+        40% {
+          transform: translate3d(7px, 0, 0);
+        }
+        60% {
+          transform: translate3d(-6px, 0, 0);
+        }
+        80% {
+          transform: translate3d(6px, 0, 0);
+        }
+      }
+
+      @media (max-width: 430px) {
+        .headline {
+          top: calc(50% - 74px);
+        }
+
+        .cta-wrap {
+          bottom: max(7.5dvh, 40px);
+        }
+
+        .heart-cta {
+          width: 182px;
+          height: 164px;
+        }
+
+        .heart-cta .heart-icon,
+        .heart-cta .heart-icon::before,
+        .heart-cta .heart-icon::after {
+          width: 88px;
+          height: 88px;
+        }
+
+        .heart-cta .heart-icon::before {
+          top: -44px;
+        }
+
+        .heart-cta .heart-icon::after {
+          left: 44px;
+        }
+
+        .popup {
+          min-height: 300px;
+          padding: 1.35rem 1rem 1.1rem;
+        }
+      }
+
+      @media (prefers-reduced-motion: reduce) {
+        .heart,
+        .scene.shake,
+        .flash-overlay.flash-red,
+        .flash-overlay.flash-green {
+          animation: none;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <main class="scene">
+      <section class="hearts" id="hearts" aria-label="Decorative hearts background"></section>
+
+      <section class="view" id="landingView">
+        <h1 class="headline">Hi my North Star.</h1>
+        <p class="subtext">I made something for you. Do you trust me?</p>
+
+        <div class="cta-wrap">
+          <a class="heart-cta" href="#" role="button" aria-label="Click me">
+            <span class="heart-icon" aria-hidden="true"></span>
+            <span class="heart-label">Click me.</span>
+          </a>
+        </div>
+
+        <section class="popup" id="resultPopup" hidden>
+          <h2>Must enter password.</h2>
+
+          <form class="password-form" id="passwordForm">
+            <input
+              class="password-input"
+              id="passwordInput"
+              type="text"
+              inputmode="numeric"
+              autocomplete="one-time-code"
+              maxlength="6"
+              placeholder="_ _ _ _ _ _"
+              aria-label="Enter 6 character password"
+            />
+
+            <div class="password-indicator" id="passwordIndicator" aria-hidden="true">
+              <span></span><span></span><span></span><span></span><span></span><span></span>
+            </div>
+
+            <button class="submit-btn" type="submit">Submit</button>
+          </form>
+        </section>
+      </section>
+
+      <section class="view next-stage" id="nextStageView" hidden>
+        <div class="next-stage-grid">
+          <article class="stage-card stage-card--top" tabindex="0" role="button" aria-label="Open Our Timeline">
+            <div class="stage-card-inner">
+              <h3 class="stage-card-title">Our Timeline</h3>
+              <button class="stage-card-close" type="button" aria-label="Close">×</button>
+              <div class="stage-card-content stage-card-content--timeline">
+                <div class="timeline-list">
+                  <section class="timeline-item">
+                    <h4 class="timeline-item-title">When we met</h4>
+                    <p class="timeline-item-text">When I was first introduced to you, I will be honest, I was skeptical. I didn't know you well and I didn't know what kind of person you were. But as we hung out more, I warmed up to you. I enjoyed playing with you and hanging out with you. And even though we didn't get closer until months later, my interest in you was through the roof. Don't tell anyone I said that ;).</p>
+                  </section>
+
+                  <section class="timeline-item">
+                    <h4 class="timeline-item-title">When I realized I loved you</h4>
+                    <p class="timeline-item-text">We've known each other for a long time. I have two different times that I realized I loved you. The first was when we got closer. More specifically, when we started binging Val together. That's when I truly realized I loved YOU. Not romantically yet. Or... was it..? It wasn't also just that one point. It was something that happened gradually as we became closer friends. My love for you just kept going. Then finally, when I realized I loved you in all the ways possible, was on our first trip. The days we spent together. The nights we spent in bed. The smile on your face throughout the day. That's when I realized it. That I loved you with all my heart.</p>
+                  </section>
+
+                  <section class="timeline-item">
+                    <h4 class="timeline-item-title">One moment I'll never forget</h4>
+                    <p class="timeline-item-text">I'll never forget meeting you in person for the first time. Walking around my car and seeing you already there behind yours. Seeing that beautiful face with your amazing smile. I'll never forget the first hug you gave me. Running up to me. I'll never forget the moment you pinned me against my car... Or the nervousness in both our voices. The look in your eyes that perfectly told me your feelings for me. I'll never forget that night.</p>
+                  </section>
+                </div>
+              </div>
+            </div>
+          </article>
+          <article class="stage-card stage-card--middle" tabindex="0" role="button" aria-label="Open Things I Love About You">
+            <div class="stage-card-inner">
+              <h3 class="stage-card-title">Things I Love About You</h3>
+              <button class="stage-card-close" type="button" aria-label="Close">×</button>
+              <div class="stage-card-content stage-card-content--love">
+                <ul class="love-list">
+                  <li>The laugh you give when you're truly happy.</li>
+                  <li>The smile you can't hold back after being complimented.</li>
+                  <li>The way your eye color shines so bright in the sun.</li>
+                  <li>The little sparkle in your eyes when you look at me.</li>
+                  <li>The confidence you have and the way you walk and yourself with that confidence.</li>
+                  <li>All the love and care in your heart.</li>
+                  <li>The way you say my name so softly, and harshly when you're mad at me :3.</li>
+                  <li>The softness you have in your voice.</li>
+                  <li>How safe you make me feel when I'm with you.</li>
+                  <li>The pitch change in your voice when you find something that you really like.</li>
+                  <li>When you support me in bot lane ;).</li>
+                  <li>And so much more...</li>
+                </ul>
+              </div>
+            </div>
+          </article>
+          <article class="stage-card stage-card--bottom" tabindex="0" role="button" aria-label="Open mystery section">
+            <div class="stage-card-inner">
+              <h3 class="stage-card-title">???</h3>
+              <button class="stage-card-close" type="button" aria-label="Close">×</button>
+              <div class="stage-card-content stage-card-content--letter">
+                <h4 class="timeline-item-title">Happy one month anniversary… and happy Valentine’s Day, my love,</h4>
+                <p class="letter-body">I waited until today so I could give you both at once, two reasons to celebrate you in one moment :3
+
+This month with you has meant more to me than you probably even realize. It hasn’t just been “a month.” It’s been late night talks, quiet reassurance, small laughs, loving moments, and choosing each other every single day and night.
+
+I know it hasn’t been easy for you, especially toward the end. I’ve seen how heavy things have felt. I’ve seen you doubt yourself and carry more than you should have to. But you’re still here. You kept going. You kept trying. And I’m so unbelievably proud of you for that.
+
+You are stronger than you think you are.
+
+I admire how hard you’re working for yourself. I see the effort, even when you’re tired. I see you trying to grow, to heal, to be better. And the fact that you care enough to try means everything to me. I hope you can see that in yourself too.
+
+Being with you feels safe. It feels real. And I love that feeling more than I can explain.
+
+This month has only made me more certain about us. I don’t just love you, Lynn. I choose you. I want to keep choosing you. I want to see where this goes, not just next month, but beyond that. I’m excited for more memories, more random little moments, more comfort, and more growing together.
+
+If this was just our first month, I can’t wait to see what the next ones look like.
+
+And today, on our anniversary and Valentine’s Day, I just want you to know how grateful I am for you. For your heart. For your softness. For your strength. For the way you love.
+
+When I gave you that promise ring, I meant every word that came with it. Not just as something pretty to wear, but as something steady and strong to hold onto. I meant that I would be patient with you. That I would stand beside you, not over you. That I would choose you even on the days that feel messy or heavy. None of that has changed. If anything, this month has only made me more sure of it.
+
+I’m so lucky to call you mine.
+
+And I can’t wait for our next month together <3
+
+With all my love,
+Aidan</p>
+              </div>
+            </div>
+          </article>
+        </div>
+        <div class="next-stage-actions">
+          <button class="all-done-btn" id="allDoneBtn" type="button">All done?</button>
+        </div>
+      </section>
+
+      <section class="view valentine-view" id="valentineView" hidden>
+        <div class="valentine-prompt" id="valentinePrompt">
+          <h1 class="valentine-header">So... will you be my valentine, sweet girl?</h1>
+
+          <div class="valentine-actions">
+            <button class="valentine-btn valentine-yes" id="yesBtn" type="button">Yes ❤</button>
+            <button class="valentine-btn valentine-no" id="noBtn" type="button">No..?</button>
+          </div>
+        </div>
+
+        <div class="valentine-result" id="valentineResult" hidden>
+          <h2>Good choice!</h2>
+          <p>I love you so much. That's it for now baby. Tell me what you think :3.</p>
+        </div>
+      </section>
+
+      <div class="flash-overlay" id="flashOverlay" aria-hidden="true"></div>
+
+      <audio id="heartSfx" preload="auto" src="heart-click.mp3"></audio>
+      <audio id="successSfx" preload="auto" src="password-success.mp3"></audio>
+    </main>
+
+    <script>
+      const heartsContainer = document.getElementById('hearts');
+      const heartCta = document.querySelector('.heart-cta');
+      const scene = document.querySelector('.scene');
+      const flashOverlay = document.getElementById('flashOverlay');
+      const landingView = document.getElementById('landingView');
+      const nextStageView = document.getElementById('nextStageView');
+      const resultPopup = document.getElementById('resultPopup');
+      const heartSfx = document.getElementById('heartSfx');
+      const successSfx = document.getElementById('successSfx');
+      const allDoneBtn = document.getElementById('allDoneBtn');
+      const valentineView = document.getElementById('valentineView');
+      const valentinePrompt = document.getElementById('valentinePrompt');
+      const valentineResult = document.getElementById('valentineResult');
+      const yesBtn = document.getElementById('yesBtn');
+      const noBtn = document.getElementById('noBtn');
+      const passwordForm = document.getElementById('passwordForm');
+      const passwordInput = document.getElementById('passwordInput');
+      const passwordIndicator = document.getElementById('passwordIndicator');
+      const indicatorSteps = Array.from(passwordIndicator.querySelectorAll('span'));
+      const HEART_SPACING_X = 44;
+      const HEART_SPACING_Y = 38;
+      const HEART_MARGIN = 140;
+      const CORRECT_PASSWORD = '011326';
+
+      let resizeRaf;
+
+      const fillHearts = () => {
+        const width = window.innerWidth;
+        const height = window.innerHeight;
+        const rows = Math.ceil((height + HEART_MARGIN * 2) / HEART_SPACING_Y);
+        const columns = Math.ceil((width + HEART_MARGIN * 2) / HEART_SPACING_X) + 1;
+        const totalHearts = rows * columns;
+
+        if (heartsContainer.childElementCount === totalHearts) {
+          return;
+        }
+
+        heartsContainer.textContent = '';
+        const fragment = document.createDocumentFragment();
+
+        for (let row = 0; row < rows; row += 1) {
+          const rowShift = row % 2 === 0 ? 0 : HEART_SPACING_X / 2;
+
+          for (let col = 0; col < columns; col += 1) {
+            const i = row * columns + col;
+            const left = col * HEART_SPACING_X + rowShift - HEART_MARGIN;
+            const top = row * HEART_SPACING_Y - HEART_MARGIN;
+
+            const heart = document.createElement('span');
+            heart.className = `heart ${i % 2 === 0 ? 'heart--one' : 'heart--two'} delay-${i % 6}`;
+            heart.style.left = `${left}px`;
+            heart.style.top = `${top}px`;
+            fragment.appendChild(heart);
+          }
+        }
+
+        heartsContainer.appendChild(fragment);
+      };
+
+      const playAudio = (audioEl) => {
+        if (!audioEl) return;
+        audioEl.currentTime = 0;
+        audioEl.play().catch(() => {
+          // Add the matching mp3 files in project root when ready.
+        });
+      };
+
+      const flash = (colorClass) => {
+        flashOverlay.classList.remove('flash-red', 'flash-green');
+        void flashOverlay.offsetWidth;
+        flashOverlay.classList.add(colorClass);
+      };
+
+      const shakeScene = () => {
+        scene.classList.remove('shake');
+        void scene.offsetWidth;
+        scene.classList.add('shake');
+      };
+
+      const triggerFailureEffect = () => {
+        playAudio(heartSfx);
+        shakeScene();
+        flash('flash-red');
+      };
+
+      const triggerSuccessEffect = () => {
+        playAudio(successSfx);
+        flash('flash-green');
+      };
+
+      const updateIndicator = () => {
+        const length = passwordInput.value.length;
+        indicatorSteps.forEach((step, index) => {
+          step.classList.toggle('filled', index < length);
+        });
+      };
+
+
+      const showNextStage = () => {
+        resultPopup.hidden = true;
+        landingView.hidden = true;
+        nextStageView.hidden = false;
+      };
+
+
+      const stageCards = Array.from(document.querySelectorAll('.stage-card'));
+      const mysteryCard = document.querySelector('.stage-card--bottom');
+      const mysteryTitle = mysteryCard?.querySelector('.stage-card-title');
+      const openedCards = new Set();
+      let lastNoOffsetX = 0;
+      let lastNoOffsetY = 0;
+
+      const expandCard = (card) => {
+        const alreadyExpanded = document.querySelector('.stage-card.is-expanded');
+        if (alreadyExpanded || !card) return;
+        nextStageView.classList.add('has-expanded');
+        card.classList.add('is-expanded');
+
+        if (card === mysteryCard && mysteryTitle) {
+          mysteryTitle.textContent = 'A Letter for You.';
+        }
+
+        if (card.classList.contains('stage-card--top')) openedCards.add('top');
+        if (card.classList.contains('stage-card--middle')) openedCards.add('middle');
+        if (card.classList.contains('stage-card--bottom')) openedCards.add('bottom');
+
+        if (openedCards.size === 3) {
+          allDoneBtn.classList.add('visible');
+        }
+      };
+
+      const collapseCard = (card) => {
+        if (!card || !card.classList.contains('is-expanded')) return;
+        card.classList.remove('is-expanded');
+        nextStageView.classList.remove('has-expanded');
+
+        if (card === mysteryCard && mysteryTitle) {
+          mysteryTitle.textContent = '???';
+        }
+      };
+
+      stageCards.forEach((card) => {
+        const closeBtn = card.querySelector('.stage-card-close');
+
+        card.addEventListener('click', (event) => {
+          if (event.target.closest('.stage-card-close')) {
+            collapseCard(card);
+            return;
+          }
+
+          if (!card.classList.contains('is-expanded')) {
+            expandCard(card);
+          }
+        });
+
+        card.addEventListener('keydown', (event) => {
+          if ((event.key === 'Enter' || event.key === ' ') && !card.classList.contains('is-expanded')) {
+            event.preventDefault();
+            expandCard(card);
+          }
+
+          if (event.key === 'Escape' && card.classList.contains('is-expanded')) {
+            collapseCard(card);
+          }
+        });
+
+        closeBtn.addEventListener('click', (event) => {
+          event.stopPropagation();
+          collapseCard(card);
+        });
+      });
+
+
+      const showValentineView = () => {
+        nextStageView.hidden = true;
+        valentineView.hidden = false;
+      };
+
+      const showValentineResult = () => {
+        valentinePrompt.classList.add('fading');
+
+        setTimeout(() => {
+          valentinePrompt.hidden = true;
+          valentineResult.hidden = false;
+        }, 360);
+      };
+
+      const moveNoButton = () => {
+        let offsetX = Math.floor((Math.random() * 220) - 110);
+        let offsetY = Math.floor(Math.random() * 100);
+
+        if (offsetX == lastNoOffsetX && offsetY == lastNoOffsetY) {
+          offsetX += 24;
+          if (offsetX > 110) offsetX = -110;
+        }
+
+        lastNoOffsetX = offsetX;
+        lastNoOffsetY = offsetY;
+        noBtn.style.setProperty('--no-offset-x', `${offsetX}px`);
+        noBtn.style.setProperty('--no-offset-y', `${offsetY}px`);
+      };
+
+      allDoneBtn.addEventListener('click', showValentineView);
+
+      yesBtn.addEventListener('click', () => {
+        showValentineResult();
+      });
+
+      noBtn.addEventListener('click', () => {
+        playAudio(heartSfx);
+        moveNoButton();
+      });
+
+
+      heartCta.addEventListener('click', (event) => {
+        event.preventDefault();
+        triggerFailureEffect();
+        resultPopup.hidden = false;
+        passwordInput.focus();
+      });
+
+      passwordInput.addEventListener('input', () => {
+        passwordInput.value = passwordInput.value.replace(/\D/g, '').slice(0, 6);
+        updateIndicator();
+      });
+
+      passwordForm.addEventListener('submit', (event) => {
+        event.preventDefault();
+
+        if (passwordInput.value !== CORRECT_PASSWORD) {
+          triggerFailureEffect();
+          passwordInput.focus();
+          passwordInput.select();
+          return;
+        }
+
+        triggerSuccessEffect();
+        setTimeout(showNextStage, 220);
+      });
+
+      fillHearts();
+
+      window.addEventListener('resize', () => {
+        cancelAnimationFrame(resizeRaf);
+        resizeRaf = requestAnimationFrame(fillHearts);
+      });
+
+      document.addEventListener('touchmove', (event) => {
+        const target = event.target instanceof Element ? event.target : null;
+
+        if (target?.closest('.stage-card--top.is-expanded .stage-card-content--timeline')
+          || target?.closest('.stage-card--bottom.is-expanded .stage-card-content--letter')) {
+          return;
+        }
+
+        if (!nextStageView.hidden || !landingView.hidden) {
+          event.preventDefault();
+        }
+      }, { passive: false });
+    </script>
+  </body>
+</html>

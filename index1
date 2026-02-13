@@ -1,0 +1,76 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Valentine's Landing Page</title>
+    <style>
+      :root {
+        --pink-bg: #ffb6d9;
+        --heart-one: #fff0f7;
+        --heart-two: #ffdced;
+      }
+
+      * {
+        box-sizing: border-box;
+      }
+
+      body {
+        margin: 0;
+        min-height: 100vh;
+        background: var(--pink-bg);
+        overflow: hidden;
+      }
+
+      .hearts {
+        width: 100vw;
+        height: 100vh;
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(52px, 1fr));
+        grid-auto-rows: 52px;
+        align-items: center;
+        justify-items: center;
+        padding: 12px;
+      }
+
+      .heart {
+        font-size: 30px;
+        line-height: 1;
+        user-select: none;
+      }
+
+      .heart:nth-child(odd) {
+        color: var(--heart-one);
+      }
+
+      .heart:nth-child(even) {
+        color: var(--heart-two);
+      }
+    </style>
+  </head>
+  <body>
+    <main class="hearts" id="hearts" aria-label="Decorative hearts background"></main>
+
+    <script>
+      const heartsContainer = document.getElementById('hearts');
+
+      const fillHearts = () => {
+        heartsContainer.innerHTML = '';
+
+        const columns = Math.floor(window.innerWidth / 52);
+        const rows = Math.floor(window.innerHeight / 52);
+        const totalHearts = columns * rows;
+
+        for (let i = 0; i < totalHearts; i += 1) {
+          const heart = document.createElement('span');
+          heart.className = 'heart';
+          heart.textContent = '❤';
+          heartsContainer.appendChild(heart);
+        }
+      };
+
+      fillHearts();
+      window.addEventListener('resize', fillHearts);
+    </script>
+  </body>
+</html>
