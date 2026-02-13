@@ -325,7 +325,7 @@
       }
 
       .next-stage-grid {
-        height: 100%;
+        height: calc(100% - 116px);
         display: grid;
         grid-template-rows: 1fr 1fr 1fr;
         align-items: center;
@@ -534,9 +534,13 @@
       }
 
       .next-stage-actions {
+        position: absolute;
+        left: 0;
+        right: 0;
+        bottom: max(3.8dvh, 24px);
         display: flex;
         justify-content: center;
-        margin-top: 0.55rem;
+        z-index: 4;
       }
 
       .valentine-view {
@@ -552,10 +556,6 @@
         display: flex;
         flex-direction: column;
         align-items: center;
-      }
-
-      .valentine-prompt.fading {
-        animation: dissolveOut 420ms ease forwards;
       }
 
       .valentine-header {
@@ -602,40 +602,42 @@
 
       .valentine-no {
         position: absolute;
-        left: 50%;
-        top: 58%;
-        transform: translate(calc(-50% + var(--no-offset-x, 0px)), var(--no-offset-y, 0px));
+        left: var(--no-left, 50%);
+        top: var(--no-top, 70%);
+        transform: translate(-50%, -50%);
         width: min(48vw, 190px);
         min-height: 58px;
         font-size: clamp(1rem, 4.2vw, 1.2rem);
-        transition: transform 280ms ease, left 280ms ease, top 280ms ease;
       }
 
-      .valentine-result {
+      .final-view {
+        padding: max(20px, env(safe-area-inset-top)) max(16px, env(safe-area-inset-right))
+          max(20px, env(safe-area-inset-bottom)) max(16px, env(safe-area-inset-left));
+      }
+
+      .final-content {
+        width: 100%;
+        height: 100%;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
         justify-content: center;
         text-align: center;
         animation: popIn 340ms ease;
       }
 
-      .valentine-result h2 {
+      .final-content h2 {
         margin: 0;
         color: #6a2f82;
         font-size: clamp(2.1rem, 9vw, 3.6rem);
       }
 
-      .valentine-result p {
+      .final-content p {
         margin-top: 0.9rem;
         max-width: min(88vw, 650px);
         color: #5a2f71;
         font-size: clamp(1.05rem, 4.4vw, 1.35rem);
         line-height: 1.5;
-      }
-
-      @keyframes dissolveOut {
-        to {
-          opacity: 0;
-          transform: scale(0.98);
-        }
       }
 
       @keyframes popIn {
@@ -902,9 +904,11 @@ Aidan</p>
             <button class="valentine-btn valentine-no" id="noBtn" type="button">No..?</button>
           </div>
         </div>
+      </section>
 
-        <div class="valentine-result" id="valentineResult" hidden>
-          <h2>Good choice!</h2>
+      <section class="view final-view" id="finalView" hidden>
+        <div class="final-content">
+          <h2>Best decision ever!</h2>
           <p>I love you so much. That's it for now baby. Tell me what you think :3.</p>
         </div>
       </section>
@@ -928,7 +932,7 @@ Aidan</p>
       const allDoneBtn = document.getElementById('allDoneBtn');
       const valentineView = document.getElementById('valentineView');
       const valentinePrompt = document.getElementById('valentinePrompt');
-      const valentineResult = document.getElementById('valentineResult');
+      const finalView = document.getElementById('finalView');
       const yesBtn = document.getElementById('yesBtn');
       const noBtn = document.getElementById('noBtn');
       const passwordForm = document.getElementById('passwordForm');
@@ -1025,8 +1029,8 @@ Aidan</p>
       const mysteryCard = document.querySelector('.stage-card--bottom');
       const mysteryTitle = mysteryCard?.querySelector('.stage-card-title');
       const openedCards = new Set();
-      let lastNoOffsetX = 0;
-      let lastNoOffsetY = 0;
+      let lastNoLeft = 50;
+      let lastNoTop = 70;
 
       const expandCard = (card) => {
         const alreadyExpanded = document.querySelector('.stage-card.is-expanded');
@@ -1092,36 +1096,34 @@ Aidan</p>
       const showValentineView = () => {
         nextStageView.hidden = true;
         valentineView.hidden = false;
+        noBtn.style.setProperty('--no-left', '50%');
+        noBtn.style.setProperty('--no-top', '70%');
       };
 
-      const showValentineResult = () => {
-        valentinePrompt.classList.add('fading');
-
-        setTimeout(() => {
-          valentinePrompt.hidden = true;
-          valentineResult.hidden = false;
-        }, 360);
+      const showFinalView = () => {
+        valentineView.hidden = true;
+        finalView.hidden = false;
       };
 
       const moveNoButton = () => {
-        let offsetX = Math.floor((Math.random() * 220) - 110);
-        let offsetY = Math.floor(Math.random() * 100);
+        let nextLeft = 15 + Math.random() * 70;
+        let nextTop = 62 + Math.random() * 30;
 
-        if (offsetX == lastNoOffsetX && offsetY == lastNoOffsetY) {
-          offsetX += 24;
-          if (offsetX > 110) offsetX = -110;
+        if (Math.abs(nextLeft - lastNoLeft) < 8 && Math.abs(nextTop - lastNoTop) < 6) {
+          nextLeft = (nextLeft + 23) % 85;
+          if (nextLeft < 15) nextLeft = 15;
         }
 
-        lastNoOffsetX = offsetX;
-        lastNoOffsetY = offsetY;
-        noBtn.style.setProperty('--no-offset-x', `${offsetX}px`);
-        noBtn.style.setProperty('--no-offset-y', `${offsetY}px`);
+        lastNoLeft = nextLeft;
+        lastNoTop = nextTop;
+        noBtn.style.setProperty('--no-left', `${nextLeft}%`);
+        noBtn.style.setProperty('--no-top', `${nextTop}%`);
       };
 
       allDoneBtn.addEventListener('click', showValentineView);
 
       yesBtn.addEventListener('click', () => {
-        showValentineResult();
+        showFinalView();
       });
 
       noBtn.addEventListener('click', () => {
